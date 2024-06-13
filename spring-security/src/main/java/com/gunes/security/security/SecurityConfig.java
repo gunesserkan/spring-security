@@ -23,7 +23,7 @@ import java.net.http.HttpRequest;
 public class SecurityConfig {
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -31,12 +31,12 @@ public class SecurityConfig {
     public UserDetailsService users() {
         UserDetails user1 = User.builder()
                 .username("sezer")
-                .password("password1")
+                .password(bCryptPasswordEncoder().encode("psw1"))
                 .roles("USER")
                 .build();
         UserDetails admin = User.builder()
                 .username("serkan")
-                .password("password2")
+                .password(bCryptPasswordEncoder().encode("psw2"))
                 .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(user1, admin);
@@ -49,6 +49,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x ->x.requestMatchers("/public/**","/auth/**").permitAll())
+                .authorizeHttpRequests(x->x.requestMatchers("/private/user/**").hasRole("USER"))
+                .authorizeHttpRequests(x->x.requestMatchers("/private/admin/**").hasRole("ADMIN"))
                 .authorizeHttpRequests(x->x.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
 
