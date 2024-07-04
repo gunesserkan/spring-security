@@ -10,7 +10,8 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Builder
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class User implements UserDetails {
 
